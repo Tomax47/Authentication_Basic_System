@@ -1,0 +1,29 @@
+<head>
+
+</head>
+
+<body>
+<center>
+  <p style="color: green"><%= notice %></p>
+
+  <h1 style="padding-bottom: 1em">Blogposts</h1>
+
+  <% if current_user.blogposts.count == 0 %>
+    <h1 style="font-weight: bold">404, No Blogposts Shared</h1>
+
+  <%else %>
+    <div id="blogposts">
+      <% @blogposts.each do |blogpost| %>
+        <%= render blogpost %>
+        <p>
+          <%= link_to "Show this blogpost", blogpost %>
+        </p>
+      <% end %>
+    </div>
+  <%end %>
+
+
+  <%= link_to "New blogpost", new_blogpost_path %>
+
+</center>
+</body>

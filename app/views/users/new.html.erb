@@ -1,0 +1,18 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Register</h1>
+
+<%#This form will send a register request to /users (our controller for users) %>
+<form action="/users" method="post">
+  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+  <label for="email">Email</label>
+  <%#In the post request we r gon send a hash, where its user points to another hash, and that hash has a key email and a value of what we have inputted!%>
+  <input type="text" id="email" name="user[email]" value="<%= @user.email %>">
+
+  <label for="password">Password</label>
+  <%#Here ain't add value = "" to the password, cuz we ain't want thee value to be prefilled! %>
+  <input type="password" id="password" name="user[password]">
+
+  <input type="submit" value="Register">
+</form>

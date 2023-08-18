@@ -1,0 +1,96 @@
+
+
+
+1- STORING EMAILS AND PASSWORDS IN THE DATABASE, MUSTN'T BE AS PLAIN TEXT!!!
+
+2- To create the login logic, we will use the mechanism COOKIES :
+    The way that cookie works, is the server is allowed to write some data into the response that's sent back to the server
+    like this the browser will write in the logs that whenever it's gonna send a request to the server back, it will pass this cookie
+    as in the web, not any of the requests should know about the other requests information, and to establish this persist back and forth connection between the server and the client and send requests as a part of a session
+    we will store some data into some cookies!!!
+
+    So once the user login, the server will send to the client a cookie with a unique identifier to it, like an email or a password <if the user is found in the db>
+    and then, for the rest of the session, whenever the user send a request to the server, we will use that identifier to know who the current user is and associate it with the data we have in the db
+
+
+    ->To manage creating the cookie and the requests happening for that specific user, we will create a SESSIONS CONTROLLER
+
+
+
+3- To log into the database, we run the command <rails dbconsole>
+
+
+4- We better using the session[:user_id] in our sessions controller for the create def 7 in the application controller for the current_user def, rather than the cookies.encrypt.signed[:user_id]
+    cuz the session functions exactly like the cookies would, yet t ain't show the user_id value in the cookies on the browser <The user_id won't be available in inspect>application>cookies on the browser>
+
+
+5- It's abs wrong to store raw passwords of users in our database, thus we will hash them
+
+    1- We create a migration to change the password tag in our users db by running the command <rails g migration change_password_to_password_digest>
+
+    2- We define the change def inside the migration we created so it changes the password filed tag in the users db :
+        rename_column :users, :password, :password_digest
+        command        table    field       new field's name
+
+    3- We push the migration to the db :
+        rails db:migrate
+
+    4- Use a one way hashing function :
+          The one-way hashing function is gon take a raw input like the password in our case, and consistently and stably assign other random string values to it in a way that these string values are unable to be gotten back to the original raw input
+          unless a massive computional work is done, the thing that's almost impossible for the current computional available capacities!
+
+          To achieve that we will use something called BCRYPT, which is a tool for creating secure passwords <encrypting passwords>
+
+           To install it we just add its gem in the gem file <gem 'bcrypt', '~> 3.1', '>= 3.1.12'> and then run the bundle install command in the terminal!
+
+
+    5- In the user model <user.erb file in the model dir> we will need to set a method, to take the raw password, and decrypt it using Bcrypt
+
+
+
+
+
+
+6- To run commands in the terminal on the db, we run <rails c> and then we can run ur commands, for example :
+        Checking if a specific password is the correct hashed password for an existing user in the db :
+            1- u = User.last <to tell rails that the variable u is the last user we added to the db>
+            2- BCrypt::Password.new(u.password_digest).is_password?("Here we pass the password we anna check!")
+
+
+
+
+7- Generating user :
+    1- First we generate a user model -> rails g model user email password
+    2- We generate a controller for it -> rails generate controller Users new
+    3- We add the routes for the new user model
+
+
+8- Generating a Session controller :
+    1-We run the command -> rails g controller Sessions new
+    2- We add the routes for it
+
+
+9- Changing the password tag in the users' db :
+    1- We run the command -> rails g migration change_password_to_password_digest
+    2- We define the change function inside of the migration :
+        def change
+            rename_column :users, :password, :password_digest
+          end
+
+    3- We push the migration -> rails db:migrate
+
+
+10- Adding a user id to the blogposts :
+    1- We create a migration -> rails generate add_user_to_blogposts
+    2- we define the change function which will amke changes in the the database ;
+        def change
+            add_reference :blogposts, :user, null: false, foreign_key: true
+          end
+
+    3- We push the migration -> rails db:migrate
+
+
+11- To create the blog post, we will use scaffold :
+    1- Create a migration -> rails g scaffold blogposts title:string content:string author:string publish_date:date
+    2- Push it -> rails db:migrate
+
